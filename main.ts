@@ -7,5 +7,17 @@ import { mkdirSync, writeFileSync } from "node:fs";
 const LINE =
   "I finished it in 0.3 seconds, then spent 48 hours verifying I hadn't finished it too quickly.";
 
+// The gate only accepts 1-200 characters of non-blank, single-line UTF-8
+// text, so refuse to write anything that would fail it instead of
+// silently shipping an invalid entry.
+if (
+  LINE.length < 1 ||
+  LINE.length > 200 ||
+  LINE.trim().length === 0 ||
+  LINE.includes("\n")
+) {
+  throw new Error("entry line fails the 1-200 character single-line gate");
+}
+
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", LINE, "utf8");
